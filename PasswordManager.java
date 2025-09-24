@@ -1,9 +1,9 @@
-import java.util.*;
-
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Arrays;
+import java.util.Scanner;
 import javax.crypto.spec.SecretKeySpec;
-
 import java.io.*;
-
 import java.security.SecureRandom;
 
 import javax.crypto.*;
@@ -19,9 +19,9 @@ public class PasswordManager {
 
     //Generate AES key from master password
     private static void setMasterPassWord(String masterPassWord) throws Exception {
-        byte[] keybytes=Array.copyOf(masterPassWord.getBytes(),16);
+        byte[] keybytes=Arrays.copyOf(masterPassWord.getBytes(),16);
 
-        secretKey=new SecretKeySpec(keyBytes,ALGORITHM);
+        secretKey=new SecretKeySpec(keybytes,ALGORITHM);
     }
 
     //For Encrypting the data
@@ -42,10 +42,10 @@ public class PasswordManager {
     private static void saveToFile() throws Exception {
         try (FileOutputStream fos=new FileOutputStream(File_Name)) {
             StringBuilder sb=new StringBuilder();
-            for (Map.Entry<String,String> entry :Credentials.entrySet()) {
+            for (Map.Entry<String,String> entry :credentials.entrySet()) {
                 sb.append(entry.getKey()).append(":").append(entry.getValue()).append("\n");
             }
-            byte[]=encrypted=encrypt(sb.toString());
+            byte[] encrypted=encrypt(sb.toString());
             fos.write(encrypted);
         }
     }
@@ -57,6 +57,8 @@ public class PasswordManager {
         String master=sc.nextLine();
         setMasterPassWord(master);
 
+
+        sc.close();
     }
     
 }
