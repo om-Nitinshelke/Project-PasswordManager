@@ -74,6 +74,44 @@ public class PasswordManager {
         }
     }
 
+    //Menu
+
+    private static void menu(Scanner sc) throws Exception {
+        while (true) {
+            System.out.println("\nPassword Manager Menu:");
+            System.out.println("1.Add Credential");
+            System.out.println("2.View Credential");
+            System.out.println("3.Exit");
+            System.out.print("Choose:");
+            int choice=sc.nextInt();
+
+            switch (choice) {
+                case 1:
+                System.out.print("Enter account name:");
+                String account =sc.nextLine();
+                System.out.println("Enter password:");
+                String password =sc.nextLine();
+                credentials.put(account,password);
+                saveToFile();
+                System.out.println("Saved Successfully!");
+                break;
+
+                case 2:
+                System.out.println("Stored credentilas:");
+                for (Map.Entry<String,String> entry:credentials.entrySet()) {
+                    System.out.println(entry.getKey() + "->" + entry.getKey());
+                }
+
+                case 3:
+                System.out.println("Exiting...");
+                return;
+
+                default:
+                System.out.println("Invalid Choice");
+            }
+        }
+    }
+
     public static void main(String args[]) throws Exception {
         Scanner sc=new Scanner(System.in);
         System.out.print("Set/Enter Master Password:");
@@ -82,6 +120,7 @@ public class PasswordManager {
         setMasterPassWord(master);
 
         loadFromFile();
+        menu(sc);
 
 
         sc.close();
