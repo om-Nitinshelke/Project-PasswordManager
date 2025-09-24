@@ -3,10 +3,10 @@ import java.util.HashMap;
 import java.util.Arrays;
 import java.util.Scanner;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.*;
-import java.security.SecureRandom;
-
+import java.io.FileOutputStream;
 import javax.crypto.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 
 public class PasswordManager {
@@ -38,6 +38,30 @@ public class PasswordManager {
         return new String(cipher.doFinal(data));
     }
 
+    private static void loadFromFile() throws Exception {
+        Path path=Path.of(File_Name);
+        if (!Files.exists(path) || Files.size(path)==0)
+        return;
+        byte[] encrypted=Files.readAllBytes(path);
+
+        String decrypted;
+        try {
+            decrypted=decrypt(encrypted);
+        } catch (Exception e){
+            throw new Exception("Failed to decrypt vault:wrong master password or file corrupted.",e);
+        }
+
+        for (String line:decrypted.split("\\r?\\n")) {
+            if (line.contains(":")) {
+                String [] parts=line.split(":",2);
+
+                String account =parts[0].trim();
+                String password=parts.length > 1? parts [1].trim():"";
+                credentials.put(account,password);
+            }
+        }
+    }
+
     //Saving the credentials to file
     private static void saveToFile() throws Exception {
         try (FileOutputStream fos=new FileOutputStream(File_Name)) {
@@ -56,6 +80,8 @@ public class PasswordManager {
 
         String master=sc.nextLine();
         setMasterPassWord(master);
+
+        loadFromFile();
 
 
         sc.close();
