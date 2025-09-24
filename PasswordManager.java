@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.Scanner;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.FileOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import javax.crypto.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -74,6 +76,64 @@ public class PasswordManager {
         }
     }
 
+    //Change Master Passord 
+
+    private static void changeMasterPassword(Scanner sc) throws Exception {
+        System.out.print("Enter current master password:");
+        String oldPass=sc.nextLine();
+
+        //Create temp key from old password
+        SecretKeySpec oldkey=new SecretKeySpec(Arrays.copyOf(oldPass.getBytes(),16),ALGORITHM);
+
+        //Try decrypting vault.dat with old key to verify
+
+        File file =new File(File_Name);
+        if (!file.exists()) {
+            System.out.println("No vault found");
+            return;
+        }
+
+        byte[] data=new byte[(int) file.length()];
+        try (FileInputStream fis =new FileInputStream(file)) {
+            fis.read(data);
+
+        }
+
+        String decrypted;
+
+        try {
+            Cipher cipher= Cipher.getInstance(ALGORITHM);
+            cipher.init(Cipher.DECRYPT_MODE,oldkey);
+            decrypted=new String(cipher.doFinal(data));
+        } catch (Exception e) {
+            System.out.println("Incorrect old master password!");
+            return;
+        }
+
+        //Ask for new master password
+        System.out.print("Enter new master password:");
+
+        String newpass=sc.nextLine();
+
+        setMasterPassWord(newpass);//upadte the secretkey with new password
+
+        //Reload credentials into memory from decrypted data\
+        credentials.clear();
+        for (String line : decrypted.split("\\r?,\n")) {
+            if (line.contains(":")) {
+                String [] parts=line.split(":",2);
+
+                String account =parts[0].trim();
+                String password=parts.length > 1? parts [1].trim():"";
+                credentials.put(account,password);
+            }
+        }
+
+        //Save encrypted file again with new master password
+        saveToFile();
+        System.out.println("Master Password Changed successfully!");
+    }
+
     //Menu
 
     private static void menu(Scanner sc) throws Exception {
@@ -103,6 +163,10 @@ public class PasswordManager {
                 }
 
                 case 3:
+                changeMasterPassword(sc);
+                break;
+
+                case 4:
                 System.out.println("Exiting...");
                 return;
 
