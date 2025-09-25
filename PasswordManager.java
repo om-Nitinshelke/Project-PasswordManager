@@ -142,14 +142,24 @@ public class PasswordManager {
             System.out.println("1.Add Credential");
             System.out.println("2.View Credential");
             System.out.println("3.Exit");
+            System.out.println("4.Exit");
             System.out.print("Choose:");
-            int choice=sc.nextInt();
+
+            String line=sc.nextLine();
+            int choice;
+
+            try {
+                choice=Integer.parseInt(line.trim());
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input.Please enter 1-4");
+                continue;
+            }
 
             switch (choice) {
                 case 1:
                 System.out.print("Enter account name:");
                 String account =sc.nextLine();
-                System.out.println("Enter password:");
+                System.out.print("Enter password:");
                 String password =sc.nextLine();
                 credentials.put(account,password);
                 saveToFile();
@@ -159,7 +169,7 @@ public class PasswordManager {
                 case 2:
                 System.out.println("Stored credentilas:");
                 for (Map.Entry<String,String> entry:credentials.entrySet()) {
-                    System.out.println(entry.getKey() + "->" + entry.getKey());
+                    System.out.println(entry.getKey() + "->" + entry.getValue());
                 }
 
                 case 3:
