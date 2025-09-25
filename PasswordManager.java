@@ -141,7 +141,7 @@ public class PasswordManager {
             System.out.println("\nPassword Manager Menu:");
             System.out.println("1.Add Credential");
             System.out.println("2.View Credential");
-            System.out.println("3.Exit");
+            System.out.println("3.Change MasterPassword");
             System.out.println("4.Exit");
             System.out.print("Choose:");
 
@@ -171,6 +171,7 @@ public class PasswordManager {
                 for (Map.Entry<String,String> entry:credentials.entrySet()) {
                     System.out.println(entry.getKey() + "->" + entry.getValue());
                 }
+                break;
 
                 case 3:
                 changeMasterPassword(sc);
